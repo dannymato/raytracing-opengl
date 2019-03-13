@@ -343,6 +343,7 @@ vec4 TraceRay(vec4 o, vec4 d, float tMin, float tMax)
 		vec4 view = -d;
 		//vec4 offset = normal * REFLECT_BIAS;
 
+		isRefract[recursionCount] = false;
 		float refraction = spheres[sphere_index].refract;
 		if (refraction > 0)
 		{
@@ -359,6 +360,7 @@ vec4 TraceRay(vec4 o, vec4 d, float tMin, float tMax)
 				if (TraceRayOneHit(reflectionRayOrig, reflectionDirection, tMin, tMax, reflectionColor))
 				{
 					refracts[recursionCount] = reflectionColor;
+					isRefract[recursionCount] = true;
 				}
 			}
 
@@ -418,7 +420,7 @@ vec4 TraceRay(vec4 o, vec4 d, float tMin, float tMax)
 		vec4 prevColor = colors[i];
 		totalColor = prevColor * (1 - reflect) + totalColor * reflect;
 		if (isRefract[i])
-			totalColor += totalColor * krs[i] + refracts[i] * (1 - krs[i]);
+			totalColor = totalColor * krs[i] + refracts[i] * (1 - krs[i]);
 	}
 
 	return totalColor;
