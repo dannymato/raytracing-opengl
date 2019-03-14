@@ -245,7 +245,7 @@ bool refract2(in vec4 v, in vec4 n, in float ni_over_nt, out vec4 refracted) {
 
 vec4 refract(vec4 I, vec4 N, float ior) 
 { 
-    float cosi = clamp(-1, 1, dot(I, N)); 
+    float cosi = clamp(dot(I, N), -1, 1); 
     float etai = 1, etat = ior; 
     vec4 n = N; 
     if (cosi < 0) { cosi = -cosi; } 
@@ -264,7 +264,7 @@ vec4 refract(vec4 I, vec4 N, float ior)
 
 void fresnel(vec4 I, vec4 N, float ior, out float kr) 
 { 
-    float cosi = clamp(-1, 1, dot(I, N)); 
+    float cosi = clamp(dot(I, N), -1, 1); 
     float etai = 1, etat = ior; 
     if (cosi > 0) 
 	{ 
@@ -356,12 +356,11 @@ vec4 TraceRay(vec4 o, vec4 d, float tMin, float tMax)
 
 			if (outside) 
 			{
-				vec4 reflectionDirection = ReflectRay(view, normal); 
+				vec4 reflectionDirection = ReflectRay(d, normal); 
 				vec4 reflectionRayOrig = p + bias; 
 				vec4 reflectionColor;
 				if (TraceRayOneHit(reflectionRayOrig, reflectionDirection, tMin, tMax, reflectionColor))
 				{
-					return vec4(recursionCount / 5.0);
 					refracts[recursionCount] = reflectionColor;
 					isRefract[recursionCount] = true;
 					krs[recursionCount] = kr;
@@ -386,7 +385,7 @@ vec4 TraceRay(vec4 o, vec4 d, float tMin, float tMax)
 				//break;
 			}
 			else {
-				return refracts[recursionCount];
+				return vec4(1);
 			}
 	
 			// // mix the two
@@ -425,10 +424,9 @@ vec4 TraceRay(vec4 o, vec4 d, float tMin, float tMax)
 		float reflect = reflects[i];
 		vec4 prevColor = colors[i];
 		totalColor = prevColor * (1 - reflect) + totalColor * reflect;
-		if (isRefract[i]) {
-			return vec4(1,1,1,0);
-			__dbg();
-			} // totalColor * krs[i] + refracts[i] * (1 - krs[i]);
+		if (isRefract[i]) 
+			//return vec4(1,0,0,0);
+			totalColor = totalColor * krs[i] + refracts[i] * (1 - krs[i]);
 	}
 
 	return totalColor;
