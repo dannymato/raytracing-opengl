@@ -324,6 +324,7 @@ vec4 TraceRay(vec4 o, vec4 d, float tMin, float tMax)
 	bool isRefract[MAX_RECURSION_DEPTH];
 	vec4 refracts[MAX_RECURSION_DEPTH];
 	float krs[MAX_RECURSION_DEPTH];
+	for (int i = 0; i < MAX_RECURSION_DEPTH; i++) krs[i] = 0.0;
 
 	int recursionCount = 0;
 
@@ -352,20 +353,23 @@ vec4 TraceRay(vec4 o, vec4 d, float tMin, float tMax)
 			bool outside = dot (d, normal) < 0; 
 			vec4 bias = REFLECT_BIAS * normal;
 			float kr;
-			fresnel(d, normal, refraction, kr);
-
-			if (outside) 
-			{
-				vec4 reflectionDirection = ReflectRay(d, normal); 
-				vec4 reflectionRayOrig = p + bias; 
-				vec4 reflectionColor;
-				if (TraceRayOneHit(reflectionRayOrig, reflectionDirection, tMin, tMax, reflectionColor))
-				{
-					refracts[recursionCount] = reflectionColor;
-					isRefract[recursionCount] = true;
-					krs[recursionCount] = kr;
-				}
-			}
+			//fresnel(d, normal, refraction, kr);
+			//krs[recursionCount] = kr;
+			// if (outside) 
+			// {
+			// 	vec4 reflectionDirection = ReflectRay(view, normal); 
+			// 	vec4 reflectionRayOrig = p + bias; 
+			// 	vec4 reflectionColor;
+			// 	//if (TraceRayOneHit(reflectionRayOrig, reflectionDirection, tMin, tMax, reflectionColor))
+			// 	{
+			// 		// refracts[recursionCount] = reflectionColor;
+			// 		// isRefract[recursionCount] = true;
+			// 		// krs[recursionCount] = kr;
+			// 		refracts[recursionCount] = vec4(1);
+			// 		isRefract[recursionCount] = true;
+					
+			// 	}
+			// }
 
 			
 			// vec4 reflectionColor = castRay(reflectionRayOrig, reflectionDirection, objects, lights, options, depth + 1); 
@@ -374,19 +378,19 @@ vec4 TraceRay(vec4 o, vec4 d, float tMin, float tMax)
 			// compute fresnel
 			
 			// compute refraction if it is not a case of total internal reflection
-			if (kr < 1) 
+			//if (kr < 1) 
 			{ 
 				--i;
-				vec4 refractionDirection = normalize(refract(d, normal, refraction)); 
+				vec4 refractionDirection = normalize(refract(view, normal, refraction)); 
 				vec4 refractionRayOrig = outside ? p - bias : p + bias; 
 				//refractionColor = castRay(refractionRayOrig, refractionDirection, objects, lights, options, depth + 1); 
 				o = refractionRayOrig;
 				d = refractionDirection;
 				//break;
 			}
-			else {
-				return vec4(1);
-			}
+			// else {
+			// 	return vec4(1);
+			// }
 	
 			// // mix the two
 			// hitColor += reflectionColor * kr + refractionColor * (1 - kr); 
@@ -424,9 +428,9 @@ vec4 TraceRay(vec4 o, vec4 d, float tMin, float tMax)
 		float reflect = reflects[i];
 		vec4 prevColor = colors[i];
 		totalColor = prevColor * (1 - reflect) + totalColor * reflect;
-		if (isRefract[i]) 
+		//if (isRefract[i]) 
 			//return vec4(1,0,0,0);
-			totalColor = totalColor * krs[i] + refracts[i] * (1 - krs[i]);
+			//totalColor = totalColor * (1- krs[i]) + refracts[i] * krs[i];
 	}
 
 	return totalColor;
