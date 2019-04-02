@@ -10,7 +10,7 @@ static int wind_height = 320;
 
 int main()
 {
-#define FULLSCREEN 0
+#define FULLSCREEN 1
 
 #if FULLSCREEN
     GLWrapper glWrapper(true);
