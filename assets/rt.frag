@@ -90,6 +90,8 @@ struct hit_record {
 #define SHADOW_AMBIENT {SHADOW_AMBIENT}
 #define ITERATIONS {ITERATIONS}
 
+out vec4 FragColor;
+
 layout( std140, binding=0 ) uniform scene_buf
 {
     rt_scene scene;
@@ -139,7 +141,7 @@ void _dbg()
 {
 	#if DBG
 	ivec2 pixel_coords = ivec2 (gl_FragCoord.xy);
-    gl_FragColor =vec4(1,0,0,1);
+    FragColor =vec4(1,0,0,1);
 	dbgEd = true;
 	#endif
 }
@@ -149,7 +151,7 @@ void _dbg(float value)
 	#if DBG
 	value = clamp(value, 0, 1);
 	ivec2 pixel_coords = ivec2 (gl_FragCoord.xy);
-    gl_FragColor = vec4(value,value,value,1);
+    FragColor = vec4(value,value,value,1);
 	dbgEd = true;
 	#endif
 }
@@ -158,7 +160,7 @@ void _dbg(vec3 value)
 {
 	#if DBG
 	ivec2 pixel_coords = ivec2 (gl_FragCoord.xy);
-    gl_FragColor = vec4(clamp(value, vec3(0), vec3(1)),1);
+    FragColor = vec4(clamp(value, vec3(0), vec3(1)),1);
 	dbgEd = true;
 	#endif
 }
@@ -415,7 +417,7 @@ void main()
 	#if AIM_ENABLED
 	if (pixel_coords == vec2(scene.canvas_width / 2, scene.canvas_height / 2))
 	{
-		gl_FragColor = vec4(1);
+		FragColor = vec4(1);
 		return;
 	}
 	#endif
@@ -515,8 +517,8 @@ void main()
 		}
 	}
 	#if DBG == 0
-	gl_FragColor = vec4(color,1);
+	FragColor = vec4(color,1);
 	#else
-	if (!dbgEd) gl_FragColor = vec4(0);
+	if (!dbgEd) FragColor = vec4(0);
 	#endif
 }
