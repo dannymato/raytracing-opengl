@@ -4,6 +4,7 @@ temp/
 *.sdf
 *.suo
 bin/
+.vscode
 
 #Ignore thumbnails created by Windows
 Thumbs.db
@@ -42,6 +43,9 @@ CMakeFiles/
 *.vcxproj*
 *.sln
 CMakeCache.txt
+Makefile
 
 #libs
 !common/*
+rt/rt
+external_sources/glad/Makefile
