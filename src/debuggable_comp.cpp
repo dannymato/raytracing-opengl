@@ -1,7 +1,6 @@
 // Sandbox_CPP.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-#include "pch.h"
 #include <iostream>
 #include <cmath>
 #include <algorithm>
@@ -458,7 +457,7 @@ void set_scene(int width, int height, int spheresCount, int lightCount)
 	scene.quat_camera_rotation = _vec4(-0.0638510138, 0.681917250, 0.0599602908, 0.726165712);
 }
 
-void main()
+void main2()
 {
 	//scene.quat_camera_rotation = _vec4(0,0,-1,0);
 	//scene.canvas_width =

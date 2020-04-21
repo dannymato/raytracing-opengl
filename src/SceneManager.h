@@ -36,6 +36,11 @@ private:
 	bool shift_pressed = false;
 	bool space_pressed = false;
 	bool alt_pressed = false;
+	bool e_pressed = false;
+	bool p_pressed = false;
+	
+	short rot_mult = 1;
+	short prev_rot = 0;
 
 	float lastX = 0;
 	float lastY = 0;

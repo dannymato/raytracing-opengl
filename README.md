@@ -16,6 +16,11 @@ Movement:
 - Shift (hold) - boost
 - Alt (hold) - slowdown
 
+Rotation Changes:
+
+- E - change rotation direction
+- P (hold) - pause rotation
+
 #### Requirements
 
 * CMake (>= 3.0.2)

@@ -46,5 +46,7 @@ private:
 
     static void checkErrors(std::string desc);
     static GLuint genRenderProg(rt_defines defines);
+	static std::string getNameFromErrorCode(GLuint);
+
 };
 

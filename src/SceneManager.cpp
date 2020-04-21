@@ -1,6 +1,7 @@
 #include "SceneManager.h"
 #include "quaternion.h"
 #include <GLFW/glfw3.h>
+#include <cstring>
 
 #define PI_F 3.14159265358979f
 
@@ -66,10 +67,10 @@ void SceneManager::moveCamera(const float direction[3], vec3 &vector, float spee
 
 void SceneManager::ProcessRotations(float frameRate)
 {
-	for (int i = 0; i < scene.rotating_primitives.size(); ++i)
+	for (unsigned int i = 0; i < scene.rotating_primitives.size(); ++i)
 	{
 		auto rot = scene.rotating_primitives.data() + i;
-		rot->current += frameRate * rot->speed;
+		rot->current += frameRate * rot->speed * rot_mult;
 		switch (rot->type)
 		{
 			case sphere:
@@ -118,6 +119,21 @@ void SceneManager::UpdateScene(float frameRate)
 		moveCamera(q, zAxis, scene.scene.camera_pos, -speed);
 	if (d_pressed)
 		moveCamera(q, xAxis, scene.scene.camera_pos, speed);
+	if (e_pressed){
+		rot_mult *= -1;
+		e_pressed = !e_pressed;
+	}
+
+	if(p_pressed) {
+		if (rot_mult != 0)
+			prev_rot = rot_mult;
+		rot_mult = 0;
+	}
+	else {
+		if (rot_mult == 0)
+			rot_mult = prev_rot;
+		
+	}
 
 	if (space_pressed)
 		moveCamera(yAxis, scene.scene.camera_pos, speed);
@@ -151,6 +167,10 @@ void SceneManager::glfw_key_callback(GLFWwindow* window, int key, int scancode, 
 			shift_pressed = pressed;
 		else if (key == GLFW_KEY_LEFT_ALT)
 			alt_pressed = pressed;
+		else if (key == GLFW_KEY_E)
+			e_pressed = pressed;
+		else if (key == GLFW_KEY_P)
+			p_pressed = pressed;
 	}
 }
 

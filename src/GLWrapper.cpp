@@ -1,6 +1,7 @@
 #include "GLWrapper.h"
 #include <iostream>
 #include <fstream>
+#include <vector>
 #include "scene.h"
 
 static void glfw_error_callback(int error, const char * desc)
@@ -47,6 +48,8 @@ bool GLWrapper::init_window()
 	glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
 	glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
 	glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 
 	if (!useCustomResolution)
 	{
@@ -71,6 +74,10 @@ bool GLWrapper::init_window()
 	}
 	printf("OpenGL %d.%d\n", GLVersion.major, GLVersion.minor);
 
+	GLuint vao = 0;
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
 	return true;
 }
 
@@ -92,7 +99,7 @@ inline unsigned divup(unsigned a, unsigned b)
 
 void GLWrapper::draw()
 {
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 6);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 	checkErrors("Draw screen");
 }
 
@@ -157,12 +164,21 @@ GLuint GLWrapper::genRenderProg(rt_defines defines)
 	glShaderSource(vp, 2, vpSrc, NULL);
 	glShaderSource(fp, 1, &tmp, NULL);
 
+	int logLength;
+
 	glCompileShader(vp);
 	int rvalue;
 	glGetShaderiv(vp, GL_COMPILE_STATUS, &rvalue);
 	if (!rvalue) {
 		fprintf(stderr, "Error in compiling vp\n");
 		exit(30);
+	}
+	glGetShaderiv(vp, GL_INFO_LOG_LENGTH, &logLength);
+	if (logLength > 0) {
+		std::vector<GLchar> errorLog(logLength);
+		glGetShaderInfoLog(vp, logLength, &logLength, &errorLog[0]);
+
+		printf("%s\n", &errorLog[0]);
 	}
 	glAttachShader(progHandle, vp);
 
@@ -240,7 +256,29 @@ void GLWrapper::checkErrors(std::string desc)
 {
     GLenum e = glGetError();
 	if (e != GL_NO_ERROR) {
-		fprintf(stderr, "OpenGL error in \"%s\": (%d)\n", desc.c_str(), e); //todo error must be here
+		std::string glError = GLWrapper::getNameFromErrorCode(e);
+		fprintf(stderr, "OpenGL error in \"%s\": (%s)\n", desc.c_str(), glError.c_str()); //todo error must be here
 		exit(20);
+	}
+}
+
+std::string GLWrapper::getNameFromErrorCode(GLenum error) {
+	switch (error) {
+		case (GL_INVALID_OPERATION) : {
+			return "INVALID OPERATION";
+			break;
+		}
+		case (GL_INVALID_ENUM) : {
+			return "INVALID_ENUM";
+			break;
+		}
+		case (GL_INVALID_VALUE) : {
+			return "INVALID_VALUE";
+			break;
+		}
+		default: {
+			return "";
+			break;
+		}
 	}
 }
